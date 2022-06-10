@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Memory</title>
+
+    <style>
+        div#stage {
+            background-color: beige;
+            opacity: 0.7;
+            padding: 10px;
+            min-height: 150px;
+            width: 100%;
+
+        }
+
+        div.card {
+            width: 120px;
+            height: 120px;
+            border: 1px solid black;
+            background-image: url("browser.png");
+            background-size: 100%;
+            background-repeat: no-repeat;
+            /*float: left;*/
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+
+        section.grid {
+            width: 120px;
+            height: 120px;
+            
+            position: relative;
+            float: left;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <button id="newGame">New game</button>
+    <button id="startGame">Start game</button>
+    <button id="pauseGame">Pause game</button>
+
+
+    <p>
+
+        time: <span id="time">0</span>
+
+    </p>
+    <p>
+        points: <span id="score"></span>
+    </p>
+
+    <div id="stage">
+
+
+    </div>
+
+
+
+
+    <script>
+        var time = 0;
+        var startGame = document.querySelector("#startGame");
+        var pauseGame = document.querySelector("#pauseGame");
+        var newGame = document.querySelector("#newGame");
+        var timeIntervalId = 0;
+        var elementTime = document.querySelector("#time");
+        var cards = [
+
+
+            "DemaciaCrest.png",
+            "DemaciaCrest.png",
+            "tryn.jpg",
+            "tryn.jpg",
+            "Tryun.png",
+            "Tryun.png",
+            "NoxusCrest.jpg",
+            "NoxusCrest.jpg"
+
+        ];
+        var tmpCards = [];
+        shuffleArray(cards);
+
+
+        function initiate() {
+
+            for (var i = 0; i < cards.length; i++) {
+                console.log(cards[i]);
+                addCard(cards[i], i);
+            }
+        }
+
+        function addCard(card, id) {
+
+            var elementSection = document.createElement("section");
+
+            elementSection.classList = "grid";
+
+           
+            var element = document.createElement("div");
+
+            element.classList = "card";
+
+            element.setAttribute("data-card", card);
+            element.setAttribute("data-id", id);
+            elementSection.append(element);
+            stage.append(elementSection);
+
+        }
+
+
+
+
+        var numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+        console.log("Array numbers:", numbers);
+        shuffleArray(numbers);
+        console.log("Array numbers är nu", numbers);
+
+        function clearStage() {
+            let stageImages = document.querySelectorAll(".grid");
+            console.log("stageImages", stageImages);
+            stageImages.forEach(element => {
+                element.remove();
+
+            })
+        }
+
+        startGame.addEventListener("click", function () {
+            clearStage();
+            initiate();
+            showTime();
+            this.setAttribute("disabled", "disabled");
+        })
+
+
+        pauseGame.addEventListener("click", function () {
+            console.log("Game paused");
+            clearInterval(timeIntervalId);
+            startGame.removeAttribute("disabled");
+        })
+
+
+
+        newGame.addEventListener("click", function () {
+            window.location.reload();
+        })
+
+        stage.addEventListener("click", function (event) {
+        var sound1 = "Blop.mp3";
+        playSound(sound1);
+
+            console.log(event.target, tmpCards.length);
+            if (event.target.tagName === "DIV") {
+                if (tmpCards.length === 0) {
+
+                    tmpCards.push(event.target);
+
+                    showCard(tmpCards[0]);
+                }
+
+                let cardsLeft = document.querySelectorAll("div.card");
+                let numberofcardsLeft = cardsLeft.length
+                console.log("numberofcardsLeft", numberofcardsLeft);
+                if (numberofcardsLeft === 0) {
+                    var sound1 = "Win.mp3";
+                    playSound(sound1);
+                    console.log("Grattis du vann");
+                    clearInterval(timeIntervalId);
+
+                }
+
+
+
+
+
+
+
+
+            }
+
+            if (tmpCards.length === 1) {
+                if (tmpCards[0].getAttribute("data-id") != event.target.getAttribute("data-id")) {
+                    tmpCards.push(event.target);
+                    showCard(tmpCards[1]);
+                    setTimeout(function () {
+                        compareCards();
+                    }, 1000);
+                }
+            }
+
+        })
+
+
+
+        function playSound(audiofile) {
+            var audio = document.createElement("audio");
+            audio.src = audiofile;
+            audio.play();
+        }
+       
+
+
+
+
+
+
+
+        function showCard(card) {
+            let image = event.target.getAttribute("data-card");
+            console.log("image", image);
+            event.target.style.backgroundImage = "url(" + image + ")";
+        }
+
+        function compareCards() {
+
+            if (tmpCards[0].getAttribute("data-card") === tmpCards[1].getAttribute("data-card")) {
+                tmpCards[0].remove();
+                tmpCards[1].remove();
+                tmpCards = [];
+            } else {
+                tmpCards[0].style.backgroundImage = "url('browser.png')";
+                tmpCards[1].style.backgroundImage = "url('browser.png')";
+                tmpCards = [];
+            }
+        }
+
+        
+        function showTime() {
+
+            timeIntervalId = setInterval(function () {
+                time += 1;
+                // console.log(time);
+                elementTime.innerHTML = time;
+            }, 1000)
+
+        }
+
+        function shuffleArray(array) {
+            for (var i = array.length - 1; i > 0; i--) {
+                var j = Math.floor(Math.random() * (i + 1));
+                var temp = array[i];
+                array[i] = array[j];
+                array[j] = temp;
+            }
+        }
+    </script>
+
+
+</body>
+
+</html>
